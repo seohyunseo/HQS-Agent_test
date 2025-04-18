@@ -64,5 +64,6 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
     debugImplementation(libs.tiles.tooling)
     implementation("androidx.health:health-services-client:1.1.0-alpha05")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 

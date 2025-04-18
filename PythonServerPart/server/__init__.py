@@ -1,5 +1,3 @@
-# import sys
-# sys.path.append('C:\GitRepository\HQS-Agent_test\PythonServerPart\server')
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from .handlers.android_handlers import AndroidNamespace

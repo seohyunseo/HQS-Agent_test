@@ -17,6 +17,7 @@ class MainActivity: ComponentActivity(){
 
     private lateinit var imuManager: IMUManager
     private lateinit var hrManager: HRManager
+    private lateinit var socketManager: SocketManager
     private lateinit var instructionText: TextView
     private lateinit var imuText: TextView
     private lateinit var hrText: TextView
@@ -36,6 +37,9 @@ class MainActivity: ComponentActivity(){
         hrText = findViewById<TextView>(R.id.HR_Value)
         instructionText.text = "Start collecting the data!"
 
+        socketManager = SocketManager("ws://192.168.0.151:5000/ws")
+        socketManager.connect()
+
         imuManager = IMUManager(this){ x, y, z ->
             runOnUiThread{
                 val text = "%.2f, %.2f, %.2f".format(x,y,z)
@@ -47,6 +51,7 @@ class MainActivity: ComponentActivity(){
             runOnUiThread{
                 val text = "%.2f (BPM)".format(bpm)
                 hrText.text = text
+
             }
         }
 
@@ -65,6 +70,7 @@ class MainActivity: ComponentActivity(){
         imuManager.start()
         hrManager.start(this, this)
         instructionText.text = "Data Collecting..."
+//        socketManager.sendData("Start")
     }
 
     fun OnPauseButtonClick(view: View){
@@ -76,6 +82,7 @@ class MainActivity: ComponentActivity(){
     fun OnQuitButtonClick(view: View){
         imuManager.stop()
         hrManager.stop()
+//        socketManager.close()
         finishAffinity()
     }
 
