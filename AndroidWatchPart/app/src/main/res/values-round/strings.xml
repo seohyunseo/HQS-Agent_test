@@ -1,0 +1,9 @@
+<resources>
+    <string name="hello_world">From the Round world,\nHello, %1$s!</string>
+    <string name="Initial_text">HQS Test App Started</string>
+    <string name="IMU_Text">IMU: </string>
+    <string name="HR_text">HR: </string>
+    <string name="Start_Button">Start</string>
+    <string name="Pause_Button">Pause</string>
+    <string name="Quit_Button">Quit</string>
+</resources>

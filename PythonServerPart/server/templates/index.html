@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SocketIO Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>HQS-Agent Server</h1>
+  <input id="inputMsg" type="text" placeholder="Type a message" />
+  <button onclick="sendMessage()">Send</button>
+  <div id="messages"></div>
+
+  <script>
+    const socket = io("/ws");
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    socket.on('server_response', (data) => {
+      console.log('Server:', data.message);
+      const div = document.createElement('div');
+      div.textContent = 'Server: ' + data.message;
+      document.getElementById('messages').appendChild(div);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById('inputMsg').value;
+      socket.emit('client_message', { message: msg });
+    }
+  </script>
+</body>
+</html>
