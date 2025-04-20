@@ -37,13 +37,15 @@ class MainActivity: ComponentActivity(){
         hrText = findViewById<TextView>(R.id.HR_Value)
         instructionText.text = "Start collecting the data!"
 
-        socketManager = SocketManager("ws://192.168.0.151:5000/ws")
+        socketManager = SocketManager("192.168.0.151")
         socketManager.connect()
+
 
         imuManager = IMUManager(this){ x, y, z ->
             runOnUiThread{
                 val text = "%.2f, %.2f, %.2f".format(x,y,z)
                 imuText.text = text
+
             }
         }
 
@@ -51,7 +53,7 @@ class MainActivity: ComponentActivity(){
             runOnUiThread{
                 val text = "%.2f (BPM)".format(bpm)
                 hrText.text = text
-
+                socketManager.sendData(text)
             }
         }
 
@@ -70,7 +72,6 @@ class MainActivity: ComponentActivity(){
         imuManager.start()
         hrManager.start(this, this)
         instructionText.text = "Data Collecting..."
-//        socketManager.sendData("Start")
     }
 
     fun OnPauseButtonClick(view: View){
@@ -82,7 +83,7 @@ class MainActivity: ComponentActivity(){
     fun OnQuitButtonClick(view: View){
         imuManager.stop()
         hrManager.stop()
-//        socketManager.close()
+        socketManager.disconnect()
         finishAffinity()
     }
 

@@ -11,7 +11,7 @@
   <div id="messages"></div>
 
   <script>
-    const socket = io("/ws");
+    const socket = io("/android");
 
     socket.on('connect', () => {
       console.log('Connected to server');
@@ -20,7 +20,7 @@
     socket.on('server_response', (data) => {
       console.log('Server:', data.message);
       const div = document.createElement('div');
-      div.textContent = 'Server: ' + data.message;
+      div.textContent = "Echo: "+data.message;
       document.getElementById('messages').appendChild(div);
     });
 

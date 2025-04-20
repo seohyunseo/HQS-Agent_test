@@ -1,50 +1,57 @@
 package com.example.hqs_test.presentation
 
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
+import io.socket.client.IO
+import io.socket.client.Socket
 import android.util.Log
+import io.socket.emitter.Emitter
+import java.net.URISyntaxException
 
 class SocketManager(private val serverIp: String) {
 
-    private lateinit var webSocket: WebSocket
-    private var TAG = "Socket"
+    private lateinit var socket: Socket
+    private val TAG = "Socket"
 
-    fun connect(){
-        val request = Request.Builder()
-            .url(serverIp)
-            .build()
+    fun connect() {
+        try {
+            val options = IO.Options()
+            options.reconnection = true
+            options.forceNew = true
 
-        val client = OkHttpClient()
-        webSocket = client.newWebSocket(request, object: WebSocketListener(){
+            socket = IO.socket("http://$serverIp:5000/android", options)
 
-            override fun onOpen(webSocket: WebSocket, response: Response){
-                Log.d(TAG, "Server connected")
+            socket.on(Socket.EVENT_CONNECT) {
+                Log.d(TAG, "Connected to server")
+                sendData("Initial Message from Android")
             }
 
-            override fun onMessage(webSocket: WebSocket, text:String){
-                Log.d(TAG, "Server: $text")
-            }
+            socket.on("message", onMessage)
 
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String){
-                println("WebsSocket Closing")
-                webSocket.close(1000,null)
-            }
+            socket.connect()
 
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?){
-                Log.d(TAG, "WebSocket Error: ${t.message}")
-            }
-
-        })
+        } catch (e: URISyntaxException) {
+            Log.e(TAG, "Socket URI Error: ${e.message}")
+        }
     }
 
-    fun sendData(data: String){
-        webSocket.send(data)
+    fun disconnect(){
+        if (::socket.isInitialized) {
+            socket.disconnect()
+            socket.off("message", onMessage)
+            Log.d(TAG, "Disconnected manually")
+        }
     }
 
-    fun close(){
-        webSocket.close(1000,null)
+    fun sendData(message: String){
+        if (::socket.isInitialized && socket.connected()) {
+            socket.emit("message", message)
+            Log.d(TAG, "Sent message to Server: $message")
+        } else {
+            Log.w(TAG, "Cannot send, not connected")
+        }
+    }
+
+    private val onMessage = Emitter.Listener { args ->
+        val msg = args[0] as? String ?: return@Listener
+        Log.d(TAG, "Received from server: $msg")
     }
 }

@@ -13,4 +13,8 @@
     <string name="Quit_Button">Quit</string>
     <string name="IMU_Text">IMU: </string>
     <string name="HR_text">HR: </string>
+    <string name="Wifi_Text">No Wi-Fi connected</string>
+    <string name="Ip_Text">No IP found</string>
+    <string name="Ip_Input">127.0.0.1:5000</string>
+    <string name="Connect_Button">Connect</string>
 </resources>

@@ -12,7 +12,7 @@ def create_app():
     socketio.init_app(app, cors_allowed_origins="*")
     
     # Register socket namespace
-    socketio.on_namespace(AndroidNamespace('/ws'))
+    socketio.on_namespace(AndroidNamespace('/android'))
 
     @app.route('/')
     def index():

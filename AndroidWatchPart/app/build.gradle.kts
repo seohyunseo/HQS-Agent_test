@@ -65,5 +65,6 @@ dependencies {
     debugImplementation(libs.tiles.tooling)
     implementation("androidx.health:health-services-client:1.1.0-alpha05")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("io.socket:socket.io-client:2.0.1")
 }
 
