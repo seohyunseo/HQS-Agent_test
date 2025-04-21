@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from .handlers.android_handlers import AndroidNamespace
+from .handlers.unity_handlers import UnityNamespace
 
 socketio = SocketIO()
 
@@ -13,6 +14,7 @@ def create_app():
     
     # Register socket namespace
     socketio.on_namespace(AndroidNamespace('/android'))
+    socketio.on_namespace(UnityNamespace('/unity'))
 
     @app.route('/')
     def index():

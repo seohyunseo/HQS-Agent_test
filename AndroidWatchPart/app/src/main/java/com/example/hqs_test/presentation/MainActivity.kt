@@ -6,6 +6,8 @@
 package com.example.hqs_test.presentation
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -16,11 +18,17 @@ import com.example.hqs_test.R
 class MainActivity: ComponentActivity(){
 
     private lateinit var imuManager: IMUManager
+    private val imuDataBuffer = StringBuilder()
     private lateinit var hrManager: HRManager
-    private lateinit var socketManager: SocketManager
     private lateinit var instructionText: TextView
     private lateinit var imuText: TextView
     private lateinit var hrText: TextView
+    private lateinit var socketManager: SocketManager
+    private lateinit var targetIp: String
+    private val handler = Handler(Looper.getMainLooper())
+    object SendInterval {
+        var sendInterval: Long = 1000L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -29,25 +37,27 @@ class MainActivity: ComponentActivity(){
         Log.d("Debug", "OnCreated")
 
         setTheme(android.R.style.Theme_DeviceDefault)
-
         setContentView(R.layout.activity_main)
 
+        targetIp = intent.getStringExtra("TARGET_IP") ?: ""
         instructionText = findViewById<TextView>(R.id.Instruction_Text)
         imuText = findViewById<TextView>(R.id.IMU_Value)
         hrText = findViewById<TextView>(R.id.HR_Value)
         instructionText.text = "Start collecting the data!"
 
-        socketManager = SocketManager("192.168.0.151")
-        socketManager.connect()
-
-
-        imuManager = IMUManager(this){ x, y, z ->
+        imuManager = IMUManager(this){ mag ->
             runOnUiThread{
-                val text = "%.2f, %.2f, %.2f".format(x,y,z)
+                val text = "%.2f,".format(mag)
+                imuDataBuffer.append(text)
                 imuText.text = text
 
             }
         }
+
+        handler.postDelayed(sendRunnable, SendInterval.sendInterval)
+
+        socketManager = SocketManager(targetIp, instructionText)
+        socketManager.connect()
 
         hrManager = HRManager(this){ bpm ->
             runOnUiThread{
@@ -87,7 +97,16 @@ class MainActivity: ComponentActivity(){
         finishAffinity()
     }
 
-
+    private val sendRunnable = object : Runnable {
+        override fun run() {
+            if (imuDataBuffer.isNotEmpty()) {
+                val dataToSend = imuDataBuffer.toString()
+                socketManager.sendData(dataToSend)
+                imuDataBuffer.clear()
+            }
+            handler.postDelayed(this, SendInterval.sendInterval)
+        }
+    }
 
 }
 

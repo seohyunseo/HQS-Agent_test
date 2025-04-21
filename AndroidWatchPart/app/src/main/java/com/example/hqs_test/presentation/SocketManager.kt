@@ -1,12 +1,14 @@
 package com.example.hqs_test.presentation
 
+import android.content.Intent
 import io.socket.client.IO
 import io.socket.client.Socket
 import android.util.Log
+import android.widget.TextView
 import io.socket.emitter.Emitter
 import java.net.URISyntaxException
 
-class SocketManager(private val serverIp: String) {
+class SocketManager(private val serverIp: String, private val insText: TextView) {
 
     private lateinit var socket: Socket
     private val TAG = "Socket"
@@ -17,14 +19,19 @@ class SocketManager(private val serverIp: String) {
             options.reconnection = true
             options.forceNew = true
 
-            socket = IO.socket("http://$serverIp:5000/android", options)
+            socket = IO.socket("http://$serverIp/android", options)
 
             socket.on(Socket.EVENT_CONNECT) {
                 Log.d(TAG, "Connected to server")
                 sendData("Initial Message from Android")
             }
 
+            socket.on(Socket.EVENT_CONNECT_ERROR) { args ->
+                insText.text = "Connection Failed. Retry with valid IP"
+            }
+
             socket.on("message", onMessage)
+            socket.on("duration", onSamplingRate)
 
             socket.connect()
 
@@ -51,7 +58,20 @@ class SocketManager(private val serverIp: String) {
     }
 
     private val onMessage = Emitter.Listener { args ->
-        val msg = args[0] as? String ?: return@Listener
-        Log.d(TAG, "Received from server: $msg")
+        var msg = args[1] as? String ?: return@Listener
+        msg = msg.trim()
+        Log.d(TAG, "Received from server: ${msg}")
     }
+
+    private val onSamplingRate = Emitter.Listener {args ->
+        val msg = args[1] as? String ?: return@Listener
+        try{
+            MainActivity.SendInterval.sendInterval = msg.toLong() * 1000
+            sendData("Duration changed to ${MainActivity.SendInterval.sendInterval}")
+        }catch(e: URISyntaxException){
+            sendData("Set valid duration")
+        }
+
+    }
+
 }

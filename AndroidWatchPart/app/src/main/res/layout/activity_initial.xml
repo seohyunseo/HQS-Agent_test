@@ -6,31 +6,19 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/Wifi_Text"
+        android:id="@+id/IpInstruction_Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="84dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="85dp"
-        android:text="@string/Wifi_Text"
-        app:layout_constraintBottom_toTopOf="@+id/Ip_Text"
+        android:layout_marginBottom="16dp"
+        android:text="@string/IpInstruction_Text"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/Ip_Input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/Ip_Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="85dp"
-        android:layout_marginBottom="47dp"
-        android:text="@string/Ip_Text"
-        app:layout_constraintBottom_toTopOf="@+id/Connect_Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Wifi_Text" />
 
     <Button
         android:id="@+id/Connect_Button"
@@ -70,7 +58,6 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/Connect_Button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Ip_Text" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

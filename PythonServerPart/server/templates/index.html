@@ -7,27 +7,68 @@
 <body>
   <h1>HQS-Agent Server</h1>
   <input id="inputMsg" type="text" placeholder="Type a message" />
-  <button onclick="sendMessage()">Send</button>
+  <button onclick="sendAndroidMessage()">Send to Android</button>
+  <button onclick="sendUnityMessage()">Send to Unity</button>
+
+  <!-- <input id="duration" type="number" step="1.0" placeholder="Duration (e.g., 1.0)" />
+  <button onclick="sendDuratoin()">Set Duration</button> -->
+
+  <button onclick="clearMessages()">Clear</button> <!-- 🧼 Clear button -->
   <div id="messages"></div>
 
   <script>
-    const socket = io("/android");
+    const androidSocket = io("/android");
 
-    socket.on('connect', () => {
-      console.log('Connected to server');
+    androidSocket.on('connect', () => {
+      console.log('[Android] Connected to server');
     });
 
-    socket.on('server_response', (data) => {
-      console.log('Server:', data.message);
-      const div = document.createElement('div');
-      div.textContent = "Echo: "+data.message;
-      document.getElementById('messages').appendChild(div);
+    androidSocket.on('server_response', (data) => {
+      appendMessage(`${data.message}`);
     });
 
-    function sendMessage() {
+    const unitySocket = io("/unity");
+
+    unitySocket.on('connect', () => {
+      console.log('[Unity] Connected to server');
+    });
+
+    unitySocket.on('server_response', (data) => {
+      appendMessage(`${data.message}`);
+    });
+
+    function sendAndroidMessage() {
       const msg = document.getElementById('inputMsg').value;
-      socket.emit('client_message', { message: msg });
+      androidSocket.emit('client_message', { message: msg });
     }
+
+    function clearMessages() {
+      document.getElementById('messages').innerHTML = '';
+    }
+
+    function sendUnityMessage() {
+      const msg = document.getElementById('inputMsg').value;
+      unitySocket.emit('client_message', { message: msg });
+    }
+
+    function appendMessage(msg) {
+      const div = document.createElement('div');
+      div.textContent = msg;
+      document.getElementById('messages').appendChild(div);
+    }
+
+    function sendDuratoin() {
+      const rateInput = document.getElementById('duration').value;
+      const rate = parseFloat(rateInput);
+
+      if (!isNaN(rate)) {
+        socket.emit('duration', { rate: rate });
+      } else {
+        alert("Please enter a valid float number for duration.");
+      }
+    }
+
+
   </script>
 </body>
 </html>

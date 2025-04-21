@@ -7,20 +7,21 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import android.widget.TextView
+import kotlin.math.*
 
 class IMUManager(
     private val context: Context,
-    private val onSensorData: (Float, Float, Float) -> Unit
+    private val onSensorData: (Float) -> Unit
 ): SensorEventListener {
 
     private val sensorManager: SensorManager =
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private var gyroscope: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+    private var acc: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
             val (x, y, z) = it.values
-            onSensorData(x, y, z)  // callback to activity
+            onSensorData(getMagnitude(x,y,z))  // callback to activity
         }
     }
 
@@ -29,13 +30,19 @@ class IMUManager(
     }
 
     fun start(){
-        gyroscope?.let {
+        acc?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         }
     }
 
     fun stop(){
         sensorManager.unregisterListener(this)
+    }
+
+    private fun getMagnitude(x:Float, y:Float, z:Float):Float{
+        val magnitude = sqrt(x*x + y*y + z*z)
+
+        return magnitude
     }
 
 }
