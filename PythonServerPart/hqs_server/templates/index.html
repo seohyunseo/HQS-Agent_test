@@ -9,11 +9,10 @@
   <input id="inputMsg" type="text" placeholder="Type a message" />
   <button onclick="sendAndroidMessage()">Send to Android</button>
   <button onclick="sendUnityMessage()">Send to Unity</button>
+  <input id="duration" type="number" step="1.0" placeholder="Duration (e.g., 1.0)" />
+  <button onclick="sendDuratoin()">Set Duration</button>
 
-  <!-- <input id="duration" type="number" step="1.0" placeholder="Duration (e.g., 1.0)" />
-  <button onclick="sendDuratoin()">Set Duration</button> -->
-
-  <button onclick="clearMessages()">Clear</button> <!-- 🧼 Clear button -->
+  <button onclick="clearMessages()">Clear</button> 
   <div id="messages"></div>
 
   <script>
@@ -61,8 +60,8 @@
       const rateInput = document.getElementById('duration').value;
       const rate = parseFloat(rateInput);
 
-      if (!isNaN(rate)) {
-        socket.emit('duration', { rate: rate });
+      if (!isNaN(rate) && (rate >= 1.0)) {
+        androidSocket.emit('duration_message', rate);
       } else {
         alert("Please enter a valid float number for duration.");
       }

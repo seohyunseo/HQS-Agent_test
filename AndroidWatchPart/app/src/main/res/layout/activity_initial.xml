@@ -40,6 +40,7 @@
         android:layout_marginStart="1dp"
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="47dp"
+        android:onClick="OnQuitButtonClick"
         android:text="@string/Quit_Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

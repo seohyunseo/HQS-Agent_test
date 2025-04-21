@@ -23,15 +23,14 @@ class SocketManager(private val serverIp: String, private val insText: TextView)
 
             socket.on(Socket.EVENT_CONNECT) {
                 Log.d(TAG, "Connected to server")
-                sendData("Initial Message from Android")
+                sendData("message","Initial Message from Android")
             }
 
             socket.on(Socket.EVENT_CONNECT_ERROR) { args ->
                 insText.text = "Connection Failed. Retry with valid IP"
             }
 
-            socket.on("message", onMessage)
-            socket.on("duration", onSamplingRate)
+            setupSocketEvents()
 
             socket.connect()
 
@@ -48,13 +47,18 @@ class SocketManager(private val serverIp: String, private val insText: TextView)
         }
     }
 
-    fun sendData(message: String){
+    fun sendData(event: String, message: String){
         if (::socket.isInitialized && socket.connected()) {
-            socket.emit("message", message)
+            socket.emit(event, message)
             Log.d(TAG, "Sent message to Server: $message")
         } else {
             Log.w(TAG, "Cannot send, not connected")
         }
+    }
+
+    fun setupSocketEvents(){
+        socket.on("message", onMessage)
+        socket.on("duration_message", onDurationMessage)
     }
 
     private val onMessage = Emitter.Listener { args ->
@@ -63,13 +67,14 @@ class SocketManager(private val serverIp: String, private val insText: TextView)
         Log.d(TAG, "Received from server: ${msg}")
     }
 
-    private val onSamplingRate = Emitter.Listener {args ->
-        val msg = args[1] as? String ?: return@Listener
+    private val onDurationMessage = Emitter.Listener {args ->
+        val msg = args[0] as? String ?: return@Listener
+        Log.d(TAG, "Received from server: ${msg}")
         try{
             MainActivity.SendInterval.sendInterval = msg.toLong() * 1000
-            sendData("Duration changed to ${MainActivity.SendInterval.sendInterval}")
+            sendData("message","Duration changed to ${MainActivity.SendInterval.sendInterval}")
         }catch(e: URISyntaxException){
-            sendData("Set valid duration")
+            sendData("message","Set valid duration")
         }
 
     }

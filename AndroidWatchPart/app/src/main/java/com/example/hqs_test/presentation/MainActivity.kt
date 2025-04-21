@@ -63,7 +63,7 @@ class MainActivity: ComponentActivity(){
             runOnUiThread{
                 val text = "%.2f (BPM)".format(bpm)
                 hrText.text = text
-                socketManager.sendData(text)
+                socketManager.sendData("HR_message", text)
             }
         }
 
@@ -101,7 +101,7 @@ class MainActivity: ComponentActivity(){
         override fun run() {
             if (imuDataBuffer.isNotEmpty()) {
                 val dataToSend = imuDataBuffer.toString()
-                socketManager.sendData(dataToSend)
+                socketManager.sendData("IMU_message", dataToSend)
                 imuDataBuffer.clear()
             }
             handler.postDelayed(this, SendInterval.sendInterval)

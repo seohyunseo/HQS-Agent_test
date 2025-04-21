@@ -16,6 +16,8 @@ def create_app():
     socketio.on_namespace(AndroidNamespace('/android'))
     socketio.on_namespace(UnityNamespace('/unity'))
 
+    socketio.emit('message', {'message':f'[Andoird] test'}, namespace='/unity')
+
     @app.route('/')
     def index():
         return render_template('index.html')

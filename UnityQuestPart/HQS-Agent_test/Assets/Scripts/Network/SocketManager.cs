@@ -120,5 +120,17 @@ public class SocketManager : MonoBehaviour
             msg = data.GetValue<string>();
             Debug.Log("[SocketManager] Received from server: "+ msg);
         });
+
+        socket.OnUnityThread("HR_message", (data) =>
+        {
+            msg = data.GetValue<string>();
+            Debug.Log("[SocketManager] HR: " + msg);
+        });
+
+        socket.OnUnityThread("IMU_message", (data) =>
+        {
+            msg = data.GetValue<string>();
+            Debug.Log("[SocketManager] IMU: " + msg);
+        });
     }
 }

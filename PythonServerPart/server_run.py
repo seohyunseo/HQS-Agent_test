@@ -1,6 +1,6 @@
-import server
+import hqs_server
 
-app = server.create_app()
+app = hqs_server.create_app()
 
 if __name__ == '__main__':
-    server.socketio.run(app, host='0.0.0.0', port=5000)
+    hqs_server.socketio.run(app, host='0.0.0.0', port=5000)
