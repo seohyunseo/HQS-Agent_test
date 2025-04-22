@@ -23,18 +23,17 @@ class AndroidNamespace(Namespace):
         emit('server_response', {'message': f"[Android] {data}"}, broadcast=True)
 
     def on_IMU_message(self, data):
-        emit('server_response', {'message': f"[Android] IMU: {data}"}, broadcast=True)
-        self.sendData(shared.unity_sid, 'IMU_message', data)
+        emit('server_response', {'message': f"[Android] IMU: {shared.getAverage(data)}"}, broadcast=True)
+        self.sendData(shared.unity_sid, 'IMU_message', shared.getAverage(data))
 
     def on_HR_message(self, data):
-        emit('server_response', {'message': f"[Android] HR: {data}"}, broadcast=True)
-        self.sendData(shared.unity_sid, 'HR_message', data)
+        emit('server_response', {'message': f"[Android] HR: {shared.getAverage(data)}"}, broadcast=True)
+        self.sendData(shared.unity_sid, 'HR_message', shared.getAverage(data))
 
     def on_duration_message(self, data):
         emit('server_response', {'message': f"[Android] Set duration for IMU: {data}s"}, broadcast=True)
         self.sendData(shared.android_sid, 'duration_message', data, namespace='/android')
         
-
     def on_client_message(self, data):
         print(f'[Android] data: {data}')
         emit('server_response', {'message': f"[Android] {data}"})

@@ -14,6 +14,7 @@ class SocketManager(private val serverIp: String, private val insText: TextView)
     private val TAG = "Socket"
 
     fun connect() {
+
         try {
             val options = IO.Options()
             options.reconnection = true

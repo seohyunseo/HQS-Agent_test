@@ -16,6 +16,9 @@ public class SocketManager : MonoBehaviour
     public string serverIp = "192.168.0.151";
     public int serverPort = 5000;
 
+    [Header("Interaction Settings")]
+    public GraphController graphController;
+
     private bool isInitialized = false;
     private string msg = "";
 
@@ -124,12 +127,14 @@ public class SocketManager : MonoBehaviour
         socket.OnUnityThread("HR_message", (data) =>
         {
             msg = data.GetValue<string>();
+            graphController.UpdateHR(msg);
             Debug.Log("[SocketManager] HR: " + msg);
         });
 
         socket.OnUnityThread("IMU_message", (data) =>
         {
             msg = data.GetValue<string>();
+            graphController.UpdateIMU(msg);
             Debug.Log("[SocketManager] IMU: " + msg);
         });
     }

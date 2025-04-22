@@ -20,6 +20,7 @@ class MainActivity: ComponentActivity(){
     private lateinit var imuManager: IMUManager
     private val imuDataBuffer = StringBuilder()
     private lateinit var hrManager: HRManager
+    private val hrDataBuffer = StringBuilder()
     private lateinit var instructionText: TextView
     private lateinit var imuText: TextView
     private lateinit var hrText: TextView
@@ -45,27 +46,7 @@ class MainActivity: ComponentActivity(){
         hrText = findViewById<TextView>(R.id.HR_Value)
         instructionText.text = "Start collecting the data!"
 
-        imuManager = IMUManager(this){ mag ->
-            runOnUiThread{
-                val text = "%.2f,".format(mag)
-                imuDataBuffer.append(text)
-                imuText.text = text
-
-            }
-        }
-
-        handler.postDelayed(sendRunnable, SendInterval.sendInterval)
-
-        socketManager = SocketManager(targetIp, instructionText)
-        socketManager.connect()
-
-        hrManager = HRManager(this){ bpm ->
-            runOnUiThread{
-                val text = "%.2f (BPM)".format(bpm)
-                hrText.text = text
-                socketManager.sendData("HR_message", text)
-            }
-        }
+        runSensorManager()
 
     }
 
@@ -99,13 +80,42 @@ class MainActivity: ComponentActivity(){
 
     private val sendRunnable = object : Runnable {
         override fun run() {
-            if (imuDataBuffer.isNotEmpty()) {
-                val dataToSend = imuDataBuffer.toString()
-                socketManager.sendData("IMU_message", dataToSend)
+            if (imuDataBuffer.isNotEmpty() && hrDataBuffer.isNotEmpty()) {
+                val imuData = imuDataBuffer.toString()
+                val hrData = hrDataBuffer.toString()
+                socketManager.sendData("IMU_message", imuData)
+                socketManager.sendData("HR_message", hrData)
                 imuDataBuffer.clear()
+                hrDataBuffer.clear()
             }
             handler.postDelayed(this, SendInterval.sendInterval)
         }
+    }
+
+    private fun runSensorManager(){
+
+        imuManager = IMUManager(this){ mag ->
+            runOnUiThread{
+                val text = "%.2f,".format(mag)
+                imuDataBuffer.append(text)
+                imuText.text = text
+
+            }
+        }
+        handler.postDelayed(sendRunnable, SendInterval.sendInterval)
+
+        socketManager = SocketManager(targetIp, instructionText)
+        socketManager.connect()
+
+        hrManager = HRManager(this){ bpm ->
+            runOnUiThread{
+                val text = "%.2f,".format(bpm)
+                hrDataBuffer.append(text)
+                hrText.text = text
+
+            }
+        }
+        handler.postDelayed(sendRunnable, SendInterval.sendInterval)
     }
 
 }
